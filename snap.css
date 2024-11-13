@@ -1,0 +1,16 @@
+/* Body Scroll Snapping */
+body {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    margin: 0;
+}
+
+/* Section Snap Alignment */
+.snap-section {
+    scroll-snap-align: start;
+    height: 100vh; /* Each section takes the full viewport height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+}

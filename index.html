@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusConnect</title>
+    <link rel="stylesheet" href="style.css">
+
+    <header id="navbar"></header>
+  
+    <script>
+      // Load the navbar HTML from navbar.html
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("navbar.html")
+          .then(response => response.text())
+          .then(data => document.getElementById("navbar").innerHTML = data);
+      });
+    </script> 
+</head>
+<body>
+    
+    <div class="container">
+        <aside class="sidebar">
+            <h2 id="header_id">🕸️</h2>
+            <button onclick="fetchDepartments('Departments')" id="db_id">🏬</button>
+            <button onclick="fetchNotices()" id="nb_id">🔔</button>
+            <button onclick="fetchLostAndFound()" id="lb_id">🚮</button>
+            <button onclick="" id="rsb_id">📖</button>
+            <button onclick="" id="clb_id">🗓️</button>
+            <button onclick="" id="dsb_id">🔰</button>
+            <button onclick="" id="hlb_id">❗</button>
+        </aside>
+
+        <main class="content">
+            <div>
+                <span class="headline" id="header1">Explore CampusConnect</span>
+                <span class="subtext">Everything You Need, All in One Place.</span>
+            <hr>
+            <br>
+            </div>
+        
+            <div id="content">
+                <ul id="departments-list" class="item-list hidden"></ul>
+                <ul id="intakes-list" class="item-list hidden"></ul>
+                <ul id="sections-list" class="item-list hidden"></ul>
+                <ul id="courses-list" class="item-list hidden"></ul>
+                <ul id="resources-list" class="item-list hidden"></ul>
+                <ul id="notices-list" class="item-list hidden"></ul>
+                <ul id="lost-and-found-list" class="item-list hidden"></ul>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
