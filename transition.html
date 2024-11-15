@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Color Change</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        section {
+            height: 20vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            transition: color 0.5s;
+        }
+        .section1 { background: #ff9999; color: rgb(118, 195, 226); }
+        .section2 { background: #99ccff; color: rgb(167, 47, 204); }
+        .section3 { background: #99ff99; color: rgb(35, 116, 71); }
+    </style>
+</head>
+<body>
+    <section class="section1">Section 1</section>
+    <section class="section2">Section 2</section>
+    <section class="section3">Section 3</section>
+
+    <script>
+        const sections = document.querySelectorAll("section");
+        const options = { threshold: 0.7 }; // Trigger when 70% is visible
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.body.style.color = getComputedStyle(entry.target).color;
+                }
+            });
+        }, options);
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>
