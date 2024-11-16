@@ -177,20 +177,31 @@
   .hidden {
     display: none;
   }
+  .headline {
+    font-size: 50px; /* Main headline font size */
+    font-weight: bold;
+}
+.subtext {
+    font-size: 16px; /* Smaller font size for the second text */
+    color: gray; /* Optional: change color to distinguish */
+    margin-left: 10px; /* Add some space between texts */
+}
   
-  @media (max-width: 768px) {
+  @media (max-width: 780px) {
     .container {
-      display: flex;
-      flex-direction: column; /* Stack items vertically */
+      /* Stack items vertically */
       height: auto; /* Adjust height for scrolling */
       width: 100%; /* Make container fit the screen */
       overflow-x: hidden; /* Prevent horizontal scrolling */
+     
     }
+ 
   
     .sidebar {
       width: 60px; /* Narrower sidebar */
       padding: 10px; /* Adjust padding */
       align-items: center;
+      height:100vh;
     }
   
     .sidebar:hover {
@@ -207,6 +218,7 @@
     }
   
     .content {
+      
       padding: 15px; /* Reduce padding for smaller screens */
     }
   
@@ -221,22 +233,137 @@
     }
   
     .headline {
-      font-size: 30px; /* Smaller headline for mobile */
+      font-size: 10px; /* Smaller headline for mobile */
     }
   
     .subtext {
       font-size: 14px; /* Smaller subtext */
       margin-left: 5px; /* Adjust spacing */
     }
+    
+  .headline {
+    font-size: 20px; /* Main headline font size */
+    font-weight: bold;
+}
+    
+    
   }
 
 
-  .headline {
-    font-size: 50px; /* Main headline font size */
+
+
+  button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.item-list {
+    list-style-type: none;
+    width: auto;
+    padding: 0;
+    margin: 0 auto;
+}
+
+.item-list li {
+    width:auto;
+    background-color: #fff;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.item-list li:hover {
+    background-color: #eaeaea;
+}
+
+.hidden {
+    display: none;
+}
+
+#upload-section {
+    width:auto;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Thumbnail and resource item styling */
+.thumbnail {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    width: 150px;   /* Set a fixed size for thumbnails */
+    height: 150px;
+    margin: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add shadow for a polished look */
+    transition: transform 0.3s ease; /* Smooth scaling on hover */
+}
+
+.thumbnail:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+}
+
+/* Grid Layout for Resources */
+.resource-items-container {
+    display:flex;
+    flex-direction: row;
+   position: relative;
+    gap: 20px; /* Space between items */
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.resource-item {
+    background-color: #f0f5f8;
+    padding: 20px;
+    border-radius: 10px;
+    margin-right: 20px ;
+    margin-top: 20px;
+    display:inline-flex;
+    flex-direction:row;
+    align-items:self-start;
+    transition: transform 0.3s ease;  /* For hover effect */
+}
+
+.resource-item:hover {
+    transform: scale(1.05);  /* Slight zoom effect on hover */
+}
+
+.resource-item h4 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
     font-weight: bold;
 }
-.subtext {
-    font-size: 16px; /* Smaller font size for the second text */
-    color: gray; /* Optional: change color to distinguish */
-    margin-left: 10px; /* Add some space between texts */
+
+.resource-item img {
+    max-width: 150px;
+    max-height: 150px;
+    cursor: pointer;
+}
+
+.resource-item a {
+    text-decoration: none; /* Remove underline from links */
+}
+
+/* Styling for the resources section */
+#resources-section {
+    padding: 20px;
+    background-color: #98d0d4;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }

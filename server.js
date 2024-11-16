@@ -1,126 +1,127 @@
-// Import required modules....
 const express = require('express');
-const mysql = require('mysql'); // Use 'mysql' package for XAMPP compatibility
 const cors = require('cors');
+const multer = require('multer');
+const mysql = require('mysql2');
+const path = require('path');
+
 const app = express();
 const PORT = 3000;
 
-// Use CORS middleware to handle CORS issues
+// Middleware
 app.use(cors());
-app.use(express.json()); // Parse JSON bodies
-app.use(express.static('public')); // Serve static files from the 'public' directory
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Create a connection to the MySQL database
-const connection = mysql.createConnection({
+// Static files for uploaded resources
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Database connection
+const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'campusconnect' // Database name you created in XAMPP
+    database: 'campusconnect'
 });
 
-// Connect to MySQL database
-connection.connect(err => {
+db.connect(err => {
     if (err) {
-        console.error('Error connecting to the database:', err);
+        console.error('Database connection failed:', err.stack);
         return;
     }
-    console.log('Connected to the MySQL database.');
+    console.log('Connected to the database.');
 });
 
-// Define API endpoints
+// Multer setup for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const upload = multer({ storage });
 
-// Get all departments
+// Routes
 app.get('/api/departments', (req, res) => {
-    const query = 'SELECT * FROM Departments';
-    connection.query(query, (err, results) => {
+    db.query('SELECT * FROM departments', (err, results) => {
         if (err) {
-            console.error('Error fetching departments:', err);
-            res.status(500).send('Server error');
-            return;
+            return res.status(500).json({ error: err.message });
         }
         res.json(results);
     });
 });
 
-// Get intakes by department ID
 app.get('/api/intakes/:departmentId', (req, res) => {
-    const departmentId = req.params.departmentId;
-    const query = 'SELECT * FROM Intakes WHERE department_id = ?';
-    connection.query(query, [departmentId], (err, results) => {
+    const { departmentId } = req.params;
+    db.query('SELECT * FROM intakes WHERE department_id = ?', [departmentId], (err, results) => {
         if (err) {
-            console.error('Error fetching intakes:', err);
-            res.status(500).send('Server error');
-            return;
+            return res.status(500).json({ error: err.message });
         }
         res.json(results);
     });
 });
 
-// Get sections by intake ID
 app.get('/api/sections/:intakeId', (req, res) => {
-    const intakeId = req.params.intakeId;
-    const query = 'SELECT * FROM Sections WHERE intake_id = ?';
-    connection.query(query, [intakeId], (err, results) => {
+    const { intakeId } = req.params;
+    db.query('SELECT * FROM sections WHERE intake_id = ?', [intakeId], (err, results) => {
         if (err) {
-            console.error('Error fetching sections:', err);
-            res.status(500).send('Server error');
-            return;
+            return res.status(500).json({ error: err.message });
         }
         res.json(results);
     });
 });
 
-// Get courses by section ID
 app.get('/api/courses/:sectionId', (req, res) => {
-    const sectionId = req.params.sectionId;
-    const query = 'SELECT * FROM Courses WHERE section_id = ?';
-    connection.query(query, [sectionId], (err, results) => {
+    const { sectionId } = req.params;
+    db.query('SELECT * FROM courses WHERE section_id = ?', [sectionId], (err, results) => {
         if (err) {
-            console.error('Error fetching courses:', err);
-            res.status(500).send('Server error');
-            return;
+            return res.status(500).json({ error: err.message });
         }
         res.json(results);
     });
 });
 
-// Get resources by course ID
 app.get('/api/resources/:courseId', (req, res) => {
-    const courseId = req.params.courseId;
-    const query = 'SELECT * FROM Resources WHERE course_id = ?';
-    connection.query(query, [courseId], (err, results) => {
+    const { courseId } = req.params;
+    db.query('SELECT * FROM resources WHERE course_id = ?', [courseId], (err, results) => {
         if (err) {
-            console.error('Error fetching resources:', err);
-            res.status(500).send('Server error');
-            return;
+            return res.status(500).json({ error: err.message });
         }
         res.json(results);
     });
 });
 
-// Get notices by department ID
-app.get('/api/notices/:departmentId', (req, res) => {
-    const departmentId = req.params.departmentId;
-    const query = 'SELECT * FROM Notices WHERE department_id = ?';
-    connection.query(query, [departmentId], (err, results) => {
+app.post('/api/resources/:courseId/upload', upload.single('file'), (req, res) => {
+    const { courseId } = req.params;
+    const { title, type } = req.body;
+    const filePath = req.file ? `/uploads/${req.file.filename}` : null;
+
+    db.query(
+        'INSERT INTO resources (course_id, title, type, file_path) VALUES (?, ?, ?, ?)',
+        [courseId, title, type, filePath],
+        (err, results) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.json({ message: 'Resource uploaded successfully', resourceId: results.insertId });
+        }
+    );
+});
+
+app.get('/api/notices', (req, res) => {
+    db.query('SELECT * FROM notices', (err, results) => {
         if (err) {
-            console.error('Error fetching notices:', err);
-            res.status(500).send('Server error');
-            return;
+            return res.status(500).json({ error: err.message });
         }
         res.json(results);
     });
 });
 
-// Get lost-and-found items by department ID
-app.get('/api/lost-and-found/:departmentId', (req, res) => {
-    const departmentId = req.params.departmentId;
-    const query = 'SELECT * FROM LostAndFound WHERE department_id = ?';
-    connection.query(query, [departmentId], (err, results) => {
+app.get('/api/lost-and-found', (req, res) => {
+    db.query('SELECT * FROM lost_and_found', (err, results) => {
         if (err) {
-            console.error('Error fetching lost-and-found items:', err);
-            res.status(500).send('Server error');
-            return;
+            return res.status(500).json({ error: err.message });
         }
         res.json(results);
     });
@@ -128,5 +129,5 @@ app.get('/api/lost-and-found/:departmentId', (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

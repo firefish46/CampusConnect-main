@@ -38,7 +38,32 @@
             <hr>
             <br>
             </div>
+            <button onclick="goBack(2)">Back</button>
+           
+            <div id="upload-section" class="hidden">
+                <h2>Upload a Resource</h2>
+                <form id="upload-form"onsubmit="return uploadResource(courseId)">
+                    <label for="resource-title">Resource Title:</label>
+                    <input type="text" id="resource-title" required>
+                    <label for="resource-type">Resource Type:</label>
+                    <select id="resource-type">
+                        <option value="PDF">PDF</option>
+                        <option value="Image">Image</option>
+                        <option value="Text">Text</option>
+                    </select>
+                    <label for="file-upload">Upload File:</label>
+                    <input type="file" id="file-upload" accept=".pdf,.jpg,.png,.txt" required>
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
         
+            <div id="resources-section" class="hidden">
+                <h2>Resources</h2>
+                <div id="courses">
+                    <!-- Course resources will be dynamically loaded here -->
+                </div>
+            </div>
+            
             <div id="content">
                 <ul id="departments-list" class="item-list hidden"></ul>
                 <ul id="intakes-list" class="item-list hidden"></ul>
@@ -48,6 +73,8 @@
                 <ul id="notices-list" class="item-list hidden"></ul>
                 <ul id="lost-and-found-list" class="item-list hidden"></ul>
             </div>
+           
+
         </main>
     </div>
 
