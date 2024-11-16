@@ -96,60 +96,68 @@ function fetchResources(courseId) {
   document.getElementById('resources-section').classList.remove('hidden');
 
   fetch(`http://localhost:3000/api/resources/${courseId}`)
-      .then(response => response.json())
-      .then(resources => {
-          const list = document.getElementById('courses');
-          list.innerHTML = ''; // Clear previous content
+    .then(response => response.json())
+    .then(resources => {
+      const list = document.getElementById('courses');
+      list.innerHTML = ''; // Clear previous content
 
-          if (resources.length === 0) {
-              list.innerHTML = '<p>No resources available for this course.</p>';
-          } else {
-              resources.forEach(resource => {
-                  const item = document.createElement('div');
-                  item.classList.add('resource-item'); // Optional: Add a class for styling
+      if (resources.length === 0) {
+        list.innerHTML = '<p>No resources available for this course.</p>';
+      } else {
+        resources.forEach(resource => {
+          const item = document.createElement('div');
+          item.classList.add('resource-item'); // Optional: Add a class for styling
 
-                  // Check if the resource is an image
-                  if (resource.file_path && isImageFile(resource.file_path)) {
-                      const fileUrl = `http://localhost:3000${resource.file_path}`;
-                      
-                      // Create a link to open the image in a new tab
-                      const fileLink = document.createElement('a');
-                      fileLink.href = fileUrl; // Set the link to the image file
-                      fileLink.target = '_blank'; // Open the link in a new tab
+          // Check if the resource is an image
+          if (resource.file_path && isImageFile(resource.file_path)) {
+            const fileUrl = `http://localhost:3000${resource.file_path}`;
 
-                      // Create the image element
-                      const img = document.createElement('img');
-                      img.src = fileUrl; // Set image source
-                      img.alt = resource.title;
-                      img.classList.add('thumbnail'); // Optional: Add a class for styling
-                      
-                      // Append the image to the link
-                      fileLink.appendChild(img);
-                      
-                      // Append the link (containing the image) to the item
-                      item.appendChild(fileLink);
-                  } else if (resource.file_path) {
-                      // For non-image files (e.g., PDFs, Text)
-                      const fileLink = document.createElement('a');
-                      fileLink.href = `http://localhost:3000${resource.file_path}`;
-                      fileLink.textContent = `${resource.title} (${resource.type})`;
-                      fileLink.target = '_blank';
-                      item.appendChild(fileLink);
-                  }
+            // Create a link to open the image in a new tab
+            const fileLink = document.createElement('a');
+            fileLink.href = fileUrl; // Set the link to the image file
+            fileLink.target = '_blank'; // Open the link in a new tab
 
-                  list.appendChild(item);
-              });
+            // Create the image element
+            const img = document.createElement('img');
+            img.src = fileUrl; // Set image source
+            img.alt = resource.title;
+            img.classList.add('thumbnail'); // Optional: Add a class for styling
+
+            // Append the image to the link
+            fileLink.appendChild(img);
+
+            // Append the link (containing the image) to the item
+            item.appendChild(fileLink);
+
+            // Add a text element below the image
+            const textElement = document.createElement('p');
+            textElement.textContent = `owner: ${resource.title || "Unknown"}`; // Assuming `place` is a field in the resource object
+            textElement.classList.add('resource-place'); // Optional: Add a class for styling
+
+            item.appendChild(textElement);
+          } else if (resource.file_path) {
+            // For non-image files (e.g., PDFs, Text)
+            const fileLink = document.createElement('a');
+            fileLink.href = `http://localhost:3000${resource.file_path}`;
+            fileLink.textContent = `${resource.title} (${resource.type})`;
+            fileLink.target = '_blank';
+            item.appendChild(fileLink);
           }
 
-          // Show upload form
-          document.getElementById('upload-section').classList.remove('hidden');
-          document.getElementById('upload-form').onsubmit = (e) => {
-              e.preventDefault();
-              uploadResource(courseId);
-          };
-      })
-      .catch(error => console.error("Error fetching resources:", error)); // Log any errors
+          list.appendChild(item);
+        });
+      }
+
+      // Show upload form
+      document.getElementById('upload-section').classList.remove('hidden');
+      document.getElementById('upload-form').onsubmit = (e) => {
+        e.preventDefault();
+        uploadResource(courseId);
+      };
+    })
+    .catch(error => console.error("Error fetching resources:", error)); // Log any errors
 }
+
 
 // Function to check if the file is an image
 function isImageFile(filePath) {
