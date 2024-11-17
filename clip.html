@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copy and Paste Text</title>
+  <link rel="stylesheet" href="clip.css">
+</head>
+<body>
+
+    <div class="container">
+        <div>
+            <span class="headline" id="header1">CLiboard</span>
+            <span class="subtext">share your texts with friend or to get latter</span>
+        <hr>
+        <br>
+        </div>
+        
+        <!-- Code to Find Text -->
+        <label for="textCode">Enter Code to Find Text:</label>
+        <input type="text" id="textCode" placeholder="Enter code to find text" />
+        
+        <br><br>
+        
+        <!-- Text Area to Paste -->
+        <textarea id="pasteArea" rows="4" cols="50" placeholder="Paste text here"></textarea>
+        
+        <br><br>
+        
+        <!-- Button to Generate Code -->
+        <button id="generateCodeButton">Generate Code</button>
+        
+        <br><br>
+        
+        <!-- Display Generated Code -->
+        <label for="generatedCode">Generated Code:</label>
+        <input type="text" id="generatedCode" readonly />
+        
+        <br><br>
+        
+        <!-- Find Code Button -->
+        <button id="findCodeButton">Find Code</button>
+        
+        <br><br>    
+        
+        <!-- Area to Show the Found Text -->
+        <div id="foundTextArea"></div>
+      </div>
+  <script src="clip.js"></script>
+</body>
+</html>

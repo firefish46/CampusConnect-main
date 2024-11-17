@@ -13,6 +13,8 @@ function fetchDepartments(context) {
   hideAllLists();
   show(context);
   document.getElementById('departments-list').classList.remove('hidden');
+  document.getElementById('resources-section').classList.add('hidden');
+  document.getElementById('upload-section').classList.add('hidden');
   fetch('http://localhost:3000/api/departments')
     .then(response => response.json())
     .then(departments => {
@@ -200,6 +202,8 @@ function uploadResource(courseId) {
 function goBack(steps = 1) {
   while (steps > 0 && historyStack.length > 1) {
     // Remove the current view from history
+    document.getElementById('resources-section').classList.add('hidden');
+  document.getElementById('upload-section').classList.add('hidden');
     historyStack.pop();
     steps--;
   }
@@ -212,4 +216,7 @@ function goBack(steps = 1) {
 function hideAllLists() {
   const lists = document.querySelectorAll('.item-list');
   lists.forEach(list => list.classList.add('hidden'));
+}
+function openClipboard() {
+  window.open('clip.html', '_blank'); // Replace 'copyPage.html' with the actual path to your HTML file
 }

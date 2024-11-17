@@ -67,8 +67,8 @@
                 content: "Claim Corner";
             }
         
-            #rsb_id::after {
-                content: "Resource";
+            #cb_id::after {
+                content: "Clipboard";
                 
                 }
                 #clb_id::after {
