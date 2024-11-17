@@ -1,0 +1,234 @@
+// Navigation history stack
+const historyStack = [];
+
+// Fetch departments
+function show(contentTitle) {
+  document.getElementById('header1').innerHTML = `<p> ${contentTitle}</p>`;
+}
+
+function fetchDepartments(context) {
+  historyStack.push(() => fetchDepartments(context));
+
+  hideAllLists();
+  show(context);
+     document.getElementById('resources-section').classList.add('hidden');
+  document.getElementById('upload-section').classList.add('hidden');
+  document.getElementById('departments-list').classList.remove('hidden');
+  fetch('http://campusconnect.free.nf/fetch.php/api/departments')
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      return response.json();
+    })
+    .then(departments => {
+      const list = document.getElementById('departments-list');
+      list.innerHTML = '';
+      departments.forEach(department => {
+        const item = document.createElement('li');
+        item.textContent = department.name;
+        item.onclick = () => fetchIntakes(department.id);
+        list.appendChild(item);
+      });
+    })
+    .catch(error => console.error('Error fetching departments:', error));
+}
+
+// Fetch intakes for a specific department
+function fetchIntakes(departmentId) {
+  historyStack.push(() => fetchIntakes(departmentId));
+
+  hideAllLists();
+  document.getElementById('intakes-list').classList.remove('hidden');
+  fetch(`http://campusconnect.free.nf/fetch.php/api/intakes/${departmentId}`)
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      return response.json();
+    })
+    .then(intakes => {
+      console.log(intakes); // Corrected to log the correct variable
+      const list = document.getElementById('intakes-list');
+      list.innerHTML = '';
+      intakes.forEach(intake => {
+        const item = document.createElement('li');
+        item.textContent = intake.name;
+        item.onclick = () => fetchSections(intake.id);
+        list.appendChild(item);
+      });
+    })
+    .catch(error => console.error('Error fetching intakes:', error));
+}
+
+// Fetch sections for a specific intake
+function fetchSections(intakeId) {
+  historyStack.push(() => fetchSections(intakeId));
+
+  hideAllLists();
+  document.getElementById('sections-list').classList.remove('hidden');
+  fetch(`http://campusconnect.free.nf/fetch.php/api/sections/${intakeId}`)
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      return response.json();
+    })
+    .then(sections => {
+      const list = document.getElementById('sections-list');
+      list.innerHTML = '';
+      sections.forEach(section => {
+        const item = document.createElement('li');
+        item.textContent = section.name;
+        item.onclick = () => fetchCourses(section.id);
+        list.appendChild(item);
+      });
+    })
+    .catch(error => console.error('Error fetching sections:', error));
+}
+
+// Fetch courses for a specific section
+function fetchCourses(sectionId) {
+  historyStack.push(() => fetchCourses(sectionId));
+
+  hideAllLists();
+  document.getElementById('courses-list').classList.remove('hidden');
+  fetch(`http://campusconnect.free.nf/fetch.php/api/courses/${sectionId}`)
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      return response.json();
+    })
+    .then(courses => {
+      const list = document.getElementById('courses-list');
+      list.innerHTML = '';
+      courses.forEach(course => {
+        const item = document.createElement('li');
+        item.textContent = course.name;
+        item.onclick = () => fetchResources(course.id);
+        list.appendChild(item);
+      });
+    })
+    .catch(error => console.error('Error fetching courses:', error));
+}
+
+// Fetch resources for a specific course
+function fetchResources(courseId) {
+  hideAllLists();
+  document.getElementById('resources-section').classList.remove('hidden');
+
+  fetch(`http://campusconnect.free.nf/fetch.php/api/resources/${courseId}`)
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      return response.json();
+    })
+    .then(resources => {
+      const list = document.getElementById('courses');
+      list.innerHTML = '';
+
+      if (resources.length === 0) {
+        list.innerHTML = '<p>No resources available for this course.</p>';
+      } else {
+        resources.forEach(resource => {
+          const item = document.createElement('div');
+          item.classList.add('resource-item');
+
+          if (resource.file_path && isImageFile(resource.file_path)) {
+            const fileUrl = `http://campusconnect.free.nf${resource.file_path}`;
+
+            const fileLink = document.createElement('a');
+            fileLink.href = fileUrl;
+            fileLink.target = '_blank';
+
+            const img = document.createElement('img');
+            img.src = fileUrl;
+            img.alt = resource.title;
+            img.classList.add('thumbnail');
+
+            fileLink.appendChild(img);
+            item.appendChild(fileLink);
+
+            const textElement = document.createElement('p');
+            textElement.textContent = `owner: ${resource.title || "Unknown"}`;
+            item.appendChild(textElement);
+          } else if (resource.file_path) {
+            const fileLink = document.createElement('a');
+            fileLink.href = `http://campusconnect.free.nf${resource.file_path}`;
+            fileLink.textContent = `${resource.title} (${resource.type})`;
+            fileLink.target = '_blank';
+            item.appendChild(fileLink);
+          }
+
+          list.appendChild(item);
+        });
+      }
+
+      document.getElementById('upload-section').classList.remove('hidden');
+      document.getElementById('upload-form').onsubmit = (e) => {
+        e.preventDefault();
+        uploadResource(courseId);
+      };
+    })
+    .catch(error => console.error("Error fetching resources:", error));
+}
+
+// Remaining functions unchanged
+// Function to check if the file is an image
+function isImageFile(filePath) {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+  const fileExtension = filePath.slice(filePath.lastIndexOf('.')).toLowerCase();
+  return imageExtensions.includes(fileExtension);
+}
+
+
+
+
+
+// Upload a resource
+function uploadResource(courseId) {
+  // Prevent the default form submission behavior
+  const title = document.getElementById('resource-title').value;
+  const type = document.getElementById('resource-type').value;
+  const file = document.getElementById('file-upload').files[0];
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('title', title);
+  formData.append('type', type);
+console.log("courseId:", courseId);
+
+  fetch(`http://campusconnect.free.nf/fetch.php/api/resources/${courseId}/upload`, {
+    method: 'POST',
+    body: formData
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
+})
+.then(data => {
+     fetchResources(courseId);
+    console.log('Upload successful:', data);
+})
+.catch(error => console.error('Error uploading resource:', error));
+
+  // Prevent the form from refreshing the page
+  return false; // Ensure the form does not reload the page
+}
+
+// Back button function with multi-step navigation
+function goBack(steps = 1) {
+  while (steps > 0 && historyStack.length > 1) {
+    // Remove the current view from history
+        document.getElementById('resources-section').classList.add('hidden');
+  document.getElementById('upload-section').classList.add('hidden');
+    historyStack.pop();
+    steps--;
+  }
+  // Navigate to the last saved view
+  const previousView = historyStack[historyStack.length - 1];
+  previousView();
+}
+
+// Hide all lists
+function hideAllLists() {
+  const lists = document.querySelectorAll('.item-list');
+  lists.forEach(list => list.classList.add('hidden'));
+}
+function openClipboard(){
+    window.open('clip.html','_blank');
+}
